@@ -1,0 +1,13 @@
+
+/VehicleManagementSystem.Backend/bin
+/VehicleManagementSystem.Backend/obj
+/VehicleManagementSystem.Backend/secrets/
+/VehicleManagementSystem.Backend/setup.sh
+
+/VehicleManagementSystem.Backend/appsettings.Development.json
+/VehicleManagementSystem.Backend/appsettings.Production.json
+
+.vscode/
+.idea/
+
+.DS_Store
