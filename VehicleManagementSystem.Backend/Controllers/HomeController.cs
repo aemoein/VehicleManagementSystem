@@ -12,4 +12,15 @@ namespace VehicleManagementSystem.Backend.Controllers
             return Ok("Welcome to the Vehicle Management System!");
         }
     }
+
+    [Route("gg")]
+    [ApiController]
+    public class GGController : ControllerBase
+    {
+        [HttpGet]
+        public IActionResult GetWelcomeMessage()
+        {
+            return Ok("Welcome to the Vehicle Management System You found secret door!");
+        }
+    }
 }
