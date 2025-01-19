@@ -1,8 +1,12 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using VehicleManagementSystem.Data;
+using VehicleManagementSystem.Services;
+using VehicleManagementSystem.Repositories; // Add this namespace for the repository
 
-namespace VehicleManagementSystem.Backend
+namespace VehicleManagementSystem
 {
     public class Program
     {
@@ -15,20 +19,50 @@ namespace VehicleManagementSystem.Backend
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.ConfigureServices(services =>
+                    webBuilder.ConfigureServices((context, services) =>
                     {
-                        // Add services to the container
-                        services.AddControllers();
+                        var connectionString = context.Configuration.GetConnectionString("DefaultConnection")
+                            ?? throw new InvalidOperationException("Connection string not found.");
+
+                        // Add DbContext with MySQL
+                        services.AddDbContext<ApplicationDbContext>(options =>
+                            options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+
+                        // Register IEmployeeRepository and EmployeeRepository
+                        services.AddScoped<IEmployeeRepository, EmployeeRepository>(); // Register the repository
+
+                        // Register ICheckoutRequestRepository and CheckoutRequestRepository
+                        services.AddScoped<ICheckoutRequestRepository, CheckoutRequestRepository>(); // Register the repository
+
+                        // Register IEmployeeService and EmployeeService
+                        services.AddScoped<IEmployeeService, EmployeeService>(); // Register the service
+
+                        // Add services for Razor Pages
+                        services.AddRazorPages();
                     })
                     .Configure(app =>
                     {
-                        // Configure the HTTP request pipeline
+                        var env = app.ApplicationServices.GetRequiredService<IHostEnvironment>();
+
+                        if (env.IsDevelopment())
+                        {
+                            app.UseDeveloperExceptionPage();
+                        }
+                        else
+                        {
+                            app.UseExceptionHandler("/Error");
+                            app.UseHsts();
+                        }
+
+                        app.UseHttpsRedirection();
+                        app.UseStaticFiles();
+
                         app.UseRouting();
 
-                        // Add endpoints to the routing system
                         app.UseEndpoints(endpoints =>
                         {
-                            endpoints.MapControllers(); // This tells ASP.NET to map controllers to the URL
+                            // Map Razor Pages
+                            endpoints.MapRazorPages();
                         });
                     });
                 });

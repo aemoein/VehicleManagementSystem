@@ -5,16 +5,12 @@ namespace VehicleManagementSystem.Data
 {
     public class ApplicationDbContext : DbContext
     {
-        // Constructor that initializes the DbSet properties to avoid nullability issues
+        // Constructor
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
-            Vehicles = Set<Vehicle>(); // Explicitly initialize DbSet
-            Employees = Set<Employee>();
-            CheckoutRequests = Set<CheckoutRequest>();
-            Fines = Set<Fine>();
-            ServiceRecords = Set<ServiceRecord>();
-            Buildings = Set<Building>();
+            // Database migration configuration
+            Database.EnsureCreated(); // Create the database if it doesn't exist
         }
 
         // DbSet properties for each entity
@@ -25,13 +21,11 @@ namespace VehicleManagementSystem.Data
         public DbSet<ServiceRecord> ServiceRecords { get; set; } = null!;
         public DbSet<Building> Buildings { get; set; } = null!;
 
+        // Fluent API configurations
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // Configure entity relationships and constraints
-
-            // Vehicle -> Building (Many-to-One)
             modelBuilder.Entity<Vehicle>()
                 .HasOne(v => v.Building)
                 .WithMany(b => b.Vehicles)
@@ -66,7 +60,7 @@ namespace VehicleManagementSystem.Data
                 .HasForeignKey(sr => sr.VehicleId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Optional: Apply additional constraints, like unique indexes
+            // Unique Indexes
             modelBuilder.Entity<Vehicle>()
                 .HasIndex(v => v.LicensePlate)
                 .IsUnique();
@@ -74,6 +68,12 @@ namespace VehicleManagementSystem.Data
             modelBuilder.Entity<Building>()
                 .HasIndex(b => b.Name)
                 .IsUnique();
+
+            // Additional Constraints on Vehicle (if necessary)
+            modelBuilder.Entity<Vehicle>()
+                .Property(v => v.LicensePlate)
+                .IsRequired()
+                .HasMaxLength(10);
         }
     }
 }
