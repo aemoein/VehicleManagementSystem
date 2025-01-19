@@ -1,0 +1,22 @@
+@page
+@model VehicleManagementSystem.Backend.Pages.IndexModel
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to the Vehicle Management System</title>
+</head>
+<body>
+    <h1>Welcome to the Vehicle Management System</h1>
+    <h2>List of Employees</h2>
+
+    <ul>
+        @foreach (var employee in Model.Employees)
+        {
+            <li>@employee.FirstName @employee.LastName</li>
+        }
+    </ul>
+</body>
+</html>
